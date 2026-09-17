@@ -20,6 +20,12 @@
     .dot { width:10px; height:10px; border-radius:50%; background:var(--red); box-shadow:0 0 12px currentColor; }
     .dot.online { background:var(--green); }
     main { padding:18px; max-width:1700px; margin:auto; }
+    .device-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-bottom:12px; }
+    .device-card { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#0d1929; border:1px solid var(--line); border-radius:10px; }
+    .device-copy { min-width:0; }
+    .device-label { color:var(--muted); font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
+    .device-value { margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .dot.warn { background:var(--orange); }
     .gauges { display:grid; grid-template-columns:repeat(6,minmax(150px,1fr)); gap:12px; }
     .gauge,.panel { background:linear-gradient(145deg,#122137,#0d1828); border:1px solid var(--line); border-radius:12px; }
     .gauge { padding:14px; }
@@ -43,7 +49,7 @@
     th:first-child,td:first-child { text-align:left; }
     td { text-align:right; padding:7px 9px; border-top:1px solid #1b2d45; white-space:nowrap; }
     tbody tr:first-child { color:#fff; background:#14263b; }
-    @media (max-width:900px) { .gauges { grid-template-columns:1fr 1fr; } .grid { grid-template-columns:1fr; } }
+    @media (max-width:900px) { .device-strip { grid-template-columns:1fr; } .gauges { grid-template-columns:1fr 1fr; } .grid { grid-template-columns:1fr; } }
     @media (max-width:570px) { header { padding:14px; } main { padding:10px; } .gauges,.charts { grid-template-columns:1fr; } }
   </style>
 </head>
@@ -53,6 +59,11 @@
     <div class="header-actions"><button id="startDyno" class="dyno-button">Start dyno test</button><div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Waiting for telemetry</span></div></div>
   </header>
   <main>
+    <section class="device-strip" aria-label="Telemetry device status">
+      <div class="device-card"><span id="wroverDot" class="dot"></span><div class="device-copy"><div class="device-label">WROVER / USB</div><div id="wroverStatus" class="device-value">Checking connection…</div></div></div>
+      <div class="device-card"><span id="c3Dot" class="dot"></span><div class="device-copy"><div class="device-label">Telemetry ESP32-C3</div><div id="c3Status" class="device-value">Checking ESP-NOW…</div></div></div>
+      <div class="device-card"><span id="relayDot" class="dot"></span><div class="device-copy"><div class="device-label">LTE → dashboard</div><div id="relayStatus" class="device-value">Checking relay…</div></div></div>
+    </section>
     <section class="gauges">
       <div class="gauge"><div class="gauge-label">Current</div><div class="gauge-value"><span id="currentValue">—</span> A</div><div class="bar"><span id="currentBar"></span></div></div>
       <div class="gauge"><div class="gauge-label">Voltage</div><div class="gauge-value"><span id="voltageValue">—</span> V</div><div class="bar"><span id="voltageBar"></span></div></div>
@@ -78,7 +89,7 @@
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const samples=[]; const maxSamples=120; let lastRecordAt=0; let marker=null; let trail=null; const trailPoints=[];
+    const samples=[]; const maxSamples=120; let lastRecordAt=0; let marker=null; let trail=null; const trailPoints=[]; let relayDiagnostic=null;
     const map=L.map('map').setView([39.79917,-86.23801],15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
     function fmt(value,digits=2){return Number.isFinite(value)?value.toFixed(digits):'—'}
@@ -100,13 +111,29 @@
       if(r.latitude!=null&&r.longitude!=null){const p=[r.latitude,r.longitude];document.getElementById('mapWait').style.display='none';if(!marker){marker=L.circleMarker(p,{radius:8,color:'#fff',fillColor:'#32a7ff',fillOpacity:1}).addTo(map);trail=L.polyline([],{color:'#44d19d',weight:3}).addTo(map);map.setView(p,17)}else marker.setLatLng(p);trailPoints.push(p);while(trailPoints.length>500)trailPoints.shift();trail.setLatLngs(trailPoints);if(!history)map.panTo(p,{animate:true})}
       redraw();
     }
+    function setDeviceStatus(dotId,valueId,state,text){const dot=document.getElementById(dotId);dot.className='dot'+(state==='online'?' online':state==='warn'?' warn':'');document.getElementById(valueId).textContent=text}
+    async function refreshRelayStatus(){
+      try{
+        const response=await fetch('/api/live/status',{cache:'no-store'});
+        if(!response.ok)throw new Error('Local relay diagnostics unavailable');
+        const state=await response.json(),relay=state.relay||{};relayDiagnostic=relay;
+        const usb=Boolean(relay.serial_connected),port=relay.port;
+        setDeviceStatus('wroverDot','wroverStatus',usb?'online':port?'warn':'offline',usb?`Connected on ${port}`:port?`${port} detected; serial monitor offline`:'Not detected');
+        const c3Age=relay.c3_age_seconds,c3Last=relay.last_car_sequence==null?'no packets':`last seq ${relay.last_car_sequence}`;
+        setDeviceStatus('c3Dot','c3Status',relay.c3_connected?'online':'offline',relay.c3_connected?`ESP-NOW live · seq ${relay.last_car_sequence??'seen'}`:c3Age==null?'No ESP-NOW car packets seen':`Offline · ${c3Last} · ${c3Age.toFixed(0)}s ago`);
+        const delivered=relay.post_status>=200&&relay.post_status<300;
+        const relayText=delivered?`Delivered · HTTP ${relay.post_status}`:relay.last_error||((relay.lte_registered||relay.lte_ip)?`LTE connected${relay.lte_ip?` · ${relay.lte_ip}`:''}; waiting for POST`:'No LTE delivery yet');
+        setDeviceStatus('relayDot','relayStatus',delivered?'online':(relay.lte_registered||relay.last_error)?'warn':'offline',relayText);
+      }catch(error){relayDiagnostic=null;setDeviceStatus('wroverDot','wroverStatus','warn','Local diagnostics unavailable');setDeviceStatus('c3Dot','c3Status','offline','Status unavailable');setDeviceStatus('relayDot','relayStatus','offline','Status unavailable')}
+      finally{setTimeout(refreshRelayStatus,1000)}
+    }
     function connect(){const scheme=location.protocol==='https:'?'wss':'ws';const ws=new WebSocket(`${scheme}://${location.host}/ws/live`);
       ws.onopen=()=>{document.getElementById('statusText').textContent='Connected; waiting for car';};
       ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.type==='snapshot'){m.records.slice(-maxSamples).forEach(r=>accept(r,true))}else if(m.type==='telemetry')accept(m.record)};
       ws.onclose=()=>{document.getElementById('statusDot').classList.remove('online');document.getElementById('statusText').textContent='Dashboard disconnected; retrying';setTimeout(connect,1500)};
     }
-    setInterval(()=>{const age=(Date.now()-lastRecordAt)/1000,online=lastRecordAt&&age<5;document.getElementById('statusDot').classList.toggle('online',online);document.getElementById('statusText').textContent=lastRecordAt?(online?`Live · ${age.toFixed(1)}s ago`:`Car stale · ${age.toFixed(0)}s ago`):'Waiting for telemetry'},500);
-    addEventListener('resize',redraw);connect();
+    setInterval(()=>{const age=(Date.now()-lastRecordAt)/1000,online=lastRecordAt&&age<5,text=document.getElementById('statusText');document.getElementById('statusDot').classList.toggle('online',online);if(lastRecordAt){text.textContent=online?`Live · ${age.toFixed(1)}s ago`:`Car stale · ${age.toFixed(0)}s ago`}else if(relayDiagnostic?.c3_connected){text.textContent=relayDiagnostic.last_error?`C3 connected · ${relayDiagnostic.last_error}`:'C3 connected · waiting for LTE delivery'}else if(relayDiagnostic?.serial_connected){text.textContent='WROVER connected · waiting for telemetry C3'}else{text.textContent='No telemetry path detected'}},500);
+    addEventListener('resize',redraw);connect();refreshRelayStatus();
     document.getElementById('startDyno').addEventListener('click',async event=>{
       const button=event.currentTarget;button.disabled=true;button.textContent='Starting...';
       try{

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UTSM Live Telemetry Setup</title>
+  <style>
+    :root{color-scheme:dark;--bg:#071013;--panel:#101d21;--line:#294149;--text:#f3f7f8;--muted:#9db0b5;--cyan:#54d8e7;--green:#5ee09c;--red:#ff7a83;--amber:#ffc857}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 0,#17343a 0,transparent 42%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+    main{width:min(760px,calc(100% - 32px));margin:0 auto;padding:56px 0}header{margin-bottom:24px}.eyebrow{color:var(--cyan);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:.76rem}h1{font-size:clamp(2rem,7vw,3.6rem);line-height:1;margin:.35rem 0 .8rem}header p{color:var(--muted);max-width:620px}
+    .card{background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 24px 70px #0008}.notice{display:flex;gap:12px;padding:14px;border-radius:12px;background:#18282c;color:#dbe6e8}.notice strong{color:var(--amber)}
+    label{display:block;margin:24px 0 8px;font-weight:700}select,button{width:100%;border-radius:12px;font:inherit}select{padding:13px 14px;background:#091316;color:var(--text);border:1px solid var(--line)}button{margin-top:14px;padding:15px;border:0;background:var(--cyan);color:#041013;font-weight:900;cursor:pointer}button:hover{filter:brightness(1.08)}button:disabled{cursor:not-allowed;filter:grayscale(.75);opacity:.6}
+    .status{margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}.status-row{display:flex;align-items:center;gap:10px}.dot{width:11px;height:11px;border-radius:50%;background:var(--muted)}.dot.running{background:var(--cyan);box-shadow:0 0 16px var(--cyan);animation:pulse 1s infinite alternate}.dot.complete{background:var(--green)}.dot.failed{background:var(--red)}@keyframes pulse{to{opacity:.35}}
+    #message{color:var(--muted);margin:.4rem 0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.step{padding:9px 6px;border:1px solid var(--line);border-radius:8px;text-align:center;color:var(--muted);font-size:.8rem}.step.active{border-color:var(--cyan);color:var(--text)}.step.done{border-color:var(--green);color:var(--green)}
+    details{margin-top:16px}pre{max-height:230px;overflow:auto;white-space:pre-wrap;background:#060c0e;border-radius:10px;padding:12px;color:#a9c0c5;font:12px/1.45 ui-monospace,Consolas,monospace}.error{color:var(--red);font-weight:700}.foot{margin-top:16px;color:var(--muted);font-size:.86rem}@media(max-width:580px){main{padding:28px 0}.card{padding:18px}.steps{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main>
+    <header><div class="eyebrow">UTSM telemetry</div><h1>Program the live relay</h1><p>This prepares a fresh Cloudflare tunnel, puts its private key and endpoint into the relay firmware, flashes the WROVER, then opens the live dashboard.</p></header>
+    <section class="card">
+      <div class="notice"><span>①</span><div><strong>Connect only the WROVER/A7670 by USB.</strong><br>Close Arduino Serial Monitor before programming.</div></div>
+      <label for="port">WROVER serial port</label>
+      <select id="port"><option value="">Looking for serial ports…</option></select>
+      <button id="program" disabled>Program WROVER and start telemetry</button>
+      <div class="status">
+        <div class="status-row"><span id="dot" class="dot"></span><strong id="phase">Ready</strong></div>
+        <p id="message">Checking the local setup…</p>
+        <div class="steps"><div id="step-tunnel" class="step">1. Tunnel + key</div><div id="step-compile" class="step">2. Compile</div><div id="step-upload" class="step">3. Program</div></div>
+        <p id="error" class="error" hidden></p>
+        <details id="details"><summary>Technical log</summary><pre id="logs">No setup output yet.</pre></details>
+      </div>
+      <div class="foot">The setup controls are restricted to this computer. The public tunnel exposes telemetry ingestion and the dashboard, not this programming page.</div>
+    </section>
+  </main>
+  <script>
+    const port=document.querySelector('#port'),button=document.querySelector('#program'),phase=document.querySelector('#phase'),message=document.querySelector('#message'),dot=document.querySelector('#dot'),error=document.querySelector('#error'),logs=document.querySelector('#logs');
+    let started=false,redirecting=false;
+    const labels={ready:'Ready',starting:'Starting',tunnel:'Preparing tunnel and key',compile:'Compiling firmware',upload:'Programming WROVER',complete:'Programming complete',failed:'Setup failed'};
+    function updateSteps(state){const order=['tunnel','compile','upload'];const at=order.indexOf(state.phase);order.forEach((name,index)=>{const el=document.querySelector('#step-'+name);el.className='step';if(state.success||at>index)el.classList.add('done');else if(at===index)el.classList.add('active')})}
+    function updatePorts(items){const previous=port.value;port.innerHTML='';for(const item of items){const option=document.createElement('option');option.value=item.device;option.textContent=`${item.device} — ${item.description}`;port.appendChild(option)}if(!items.length){port.add(new Option('No serial ports found — connect the WROVER',''));}else if(items.some(item=>item.device===previous)){port.value=previous}}
+    async function refresh(){try{const response=await fetch('/api/setup/status',{cache:'no-store'});if(!response.ok)throw new Error(`Status request failed (${response.status})`);const state=await response.json();if(!started&&!state.running)updatePorts(state.ports);phase.textContent=labels[state.phase]||state.phase;message.textContent=state.message;dot.className='dot '+(state.running?'running':state.success?'complete':state.error?'failed':'');error.hidden=!state.error;error.textContent=state.error||'';logs.textContent=state.logs.length?state.logs.join('\n'):'No setup output yet.';logs.scrollTop=logs.scrollHeight;updateSteps(state);button.disabled=state.running||!port.value;button.textContent=state.running?'Programming in progress…':state.error?'Try programming again':'Program WROVER and start telemetry';started=state.running||state.success||Boolean(state.error);if(state.success&&!redirecting){redirecting=true;setTimeout(()=>location.assign('/live'),1800)}}catch(err){message.textContent=err.message;dot.className='dot failed'}finally{setTimeout(refresh,1000)}}
+    button.addEventListener('click',async()=>{button.disabled=true;error.hidden=true;const response=await fetch('/api/setup/program',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({port:port.value})});if(!response.ok){const body=await response.json().catch(()=>({}));error.hidden=false;error.textContent=body.detail||`Programming request failed (${response.status})`;button.disabled=false}else{started=true}});
+    port.addEventListener('change',()=>button.disabled=!port.value);
+    refresh();
+  </script>
+</body>
+</html>

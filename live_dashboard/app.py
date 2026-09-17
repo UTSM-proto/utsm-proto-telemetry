@@ -8,9 +8,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Literal
 
-from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
+
+from live_dashboard.setup_portal import setup_coordinator
 
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
@@ -59,6 +61,10 @@ class TelemetryRecord(TelemetryInput):
             ),
             acceleration_mps2=value.amag_x100 / 100.0,
         )
+
+
+class ProgramWroverRequest(BaseModel):
+    port: str = Field(min_length=4, max_length=16)
 
 
 class TelemetryHub:
@@ -259,7 +265,47 @@ def verify_ingestion_key(
 
 @app.get("/")
 async def root() -> RedirectResponse:
-    return RedirectResponse(url="/live")
+    destination = "/setup" if setup_coordinator.enabled else "/live"
+    return RedirectResponse(url=destination)
+
+
+def require_local_setup_request(request: Request) -> None:
+    host = (request.url.hostname or "").lower()
+    if host not in {"127.0.0.1", "localhost", "::1"}:
+        raise HTTPException(status_code=403, detail="Setup is available only on localhost.")
+
+
+@app.get("/setup")
+async def setup_portal(request: Request) -> FileResponse:
+    require_local_setup_request(request)
+    if not setup_coordinator.enabled:
+        raise HTTPException(status_code=404, detail="Setup portal is not enabled.")
+    return FileResponse(STATIC_DIR / "setup.html")
+
+
+@app.get("/api/setup/status")
+async def setup_status(request: Request) -> dict[str, object]:
+    require_local_setup_request(request)
+    return setup_coordinator.snapshot()
+
+
+@app.get("/api/live/status")
+async def live_relay_status() -> dict[str, object]:
+    """Expose sanitized connection diagnostics without setup controls or logs."""
+    return {"relay": setup_coordinator.relay_snapshot()}
+
+
+@app.post("/api/setup/program", status_code=202)
+async def program_wrover(
+    request: Request, payload: ProgramWroverRequest
+) -> dict[str, object]:
+    require_local_setup_request(request)
+    try:
+        return await setup_coordinator.start(payload.port)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    except RuntimeError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
 
 
 @app.get("/live")

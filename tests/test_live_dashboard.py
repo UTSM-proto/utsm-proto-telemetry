@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 import unittest
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -157,6 +158,25 @@ class TestLiveTelemetry(unittest.TestCase):
 
         result = asyncio.run(exercise())
         self.assertAlmostEqual(result["output_energy_Wh"], 0.5)
+
+
+class TestDynoDashboardMarkup(unittest.TestCase):
+    def test_device_online_indicators_use_eight_second_freshness(self):
+        page = (
+            Path(__file__).parents[1] / "live_dashboard" / "static" / "dyno.html"
+        ).read_text(encoding="utf-8")
+
+        for element_id in (
+            "carOnlineDot",
+            "dynoOnlineDot",
+            "wroverOnlineDot",
+            "carOnlineText",
+            "dynoOnlineText",
+            "wroverOnlineText",
+        ):
+            self.assertIn(f'id="{element_id}"', page)
+        self.assertIn("ageSeconds(receivedAt)<8", page)
+        self.assertIn("Math.max(...receivedTimes)", page)
 
 
 if __name__ == "__main__":
