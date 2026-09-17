@@ -378,6 +378,11 @@ Click **Start dyno test** on `/live` to create an in-memory test and open
 efficiency, input Wh, output Wh, and whole-run efficiency. Clicking **Stop
 test** freezes the result and reports:
 
+The dyno page also shows separate eight-second online indicators for the car
+C3 and dyno C3. The WROVER LTE indicator is green when either source has been
+delivered to the dashboard within eight seconds, so it represents confirmed
+cloud delivery rather than USB power or LTE registration alone.
+
 ```text
 efficiency percent = dyno output Wh / car input Wh * 100
 ```

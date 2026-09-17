@@ -19,6 +19,11 @@
     .dot.live { background:var(--green); box-shadow:0 0 14px var(--green); }
     .source-status { display:flex; align-items:center; gap:8px; }
     .source-status .dot { width:9px; height:9px; flex:0 0 auto; }
+    .device-status { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; }
+    .device { display:flex; align-items:center; gap:10px; min-width:0; padding:12px 14px; border:1px solid var(--line); border-radius:11px; background:#0e1b2d; }
+    .device-copy { min-width:0; }
+    .device-name { font-weight:750; }
+    .device-detail { overflow:hidden; color:var(--muted); font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
     button { border:0; border-radius:9px; padding:11px 18px; font-weight:800; cursor:pointer; }
     #stopButton { background:var(--red); color:white; }
     #startButton { background:var(--green); color:#04160f; }
@@ -40,7 +45,7 @@
     #result h2 { margin:0 0 8px; }
     #result .final { font-size:46px; color:var(--green); font-weight:800; }
     .warning { color:var(--orange); }
-    @media(max-width:760px){header{padding:14px}.power-grid,.energy-grid{grid-template-columns:1fr}.runbar{align-items:flex-start;flex-direction:column}.runbar button{width:100%}}
+    @media(max-width:760px){header{padding:14px}.power-grid,.energy-grid,.device-status{grid-template-columns:1fr}.runbar{align-items:flex-start;flex-direction:column}.runbar button{width:100%}}
   </style>
 </head>
 <body>
@@ -53,6 +58,12 @@
       <div><div class="state"><span id="runDot" class="dot"></span><span id="runState">Loading test...</span></div><div id="runTime" class="subtitle">—</div></div>
       <button id="startButton" hidden>Start new test</button>
       <button id="stopButton" disabled>Stop test</button>
+    </section>
+
+    <section class="device-status" aria-label="Telemetry device status">
+      <div class="device"><span id="carOnlineDot" class="dot"></span><div class="device-copy"><div class="device-name">Car C3</div><div id="carOnlineText" class="device-detail">Waiting for packet</div></div></div>
+      <div class="device"><span id="dynoOnlineDot" class="dot"></span><div class="device-copy"><div class="device-name">Dyno C3</div><div id="dynoOnlineText" class="device-detail">Waiting for packet</div></div></div>
+      <div class="device"><span id="wroverOnlineDot" class="dot"></span><div class="device-copy"><div class="device-name">WROVER LTE</div><div id="wroverOnlineText" class="device-detail">Waiting for cloud delivery</div></div></div>
     </section>
 
     <section class="power-grid">
@@ -76,6 +87,20 @@
     const number=(value,digits=1)=>value==null?'—':Number(value).toFixed(digits);
     const ageSeconds=value=>value?(Date.now()-new Date(value).getTime())/1000:Infinity;
     const ageText=value=>{if(!value)return 'Waiting for data';const age=ageSeconds(value);return age<8?`Live · ${age.toFixed(1)}s ago`:`Stale · ${age.toFixed(0)}s ago`};
+    const onlineText=(value,waiting)=>value?(ageSeconds(value)<8?`Online · ${ageSeconds(value).toFixed(1)}s ago`:`Offline · last seen ${ageSeconds(value).toFixed(0)}s ago`):waiting;
+    function renderDeviceStatus(carReceivedAt,dynoReceivedAt){
+      const receivedTimes=[carReceivedAt,dynoReceivedAt].filter(Boolean).map(value=>new Date(value).getTime()).filter(Number.isFinite);
+      const wroverReceivedAt=receivedTimes.length?new Date(Math.max(...receivedTimes)).toISOString():null;
+      const statuses=[
+        ['carOnlineDot','carOnlineText',carReceivedAt,'Waiting for car packet'],
+        ['dynoOnlineDot','dynoOnlineText',dynoReceivedAt,'Waiting for dyno packet'],
+        ['wroverOnlineDot','wroverOnlineText',wroverReceivedAt,'Waiting for cloud delivery'],
+      ];
+      for(const [dotId,textId,receivedAt,waiting] of statuses){
+        byId(dotId).classList.toggle('live',ageSeconds(receivedAt)<8);
+        byId(textId).textContent=onlineText(receivedAt,waiting);
+      }
+    }
     function renderSources(test,latest={}){
       const car=latest.car||null,dyno=latest.dyno||null;
       const inputPower=test?.input_power_W??car?.power_W,outputPower=test?.output_power_W??dyno?.power_W;
@@ -84,6 +109,7 @@
       byId('carVoltage').textContent=number(test?.car_voltage_V??(car?car.voltage_mV/1000:null),2);byId('carCurrent').textContent=number(test?.car_current_A??(car?car.current_mA/1000:null),2);byId('dynoVoltage').textContent=number(test?.dyno_voltage_V??(dyno?dyno.voltage_mV/1000:null),3);byId('dynoCurrent').textContent=number(test?.dyno_current_A??(dyno?dyno.current_mA/1000:null),3);
       byId('carFreshness').textContent=ageText(carReceivedAt);byId('dynoFreshness').textContent=ageText(dynoReceivedAt);
       byId('carDot').classList.toggle('live',ageSeconds(carReceivedAt)<8);byId('dynoDot').classList.toggle('live',ageSeconds(dynoReceivedAt)<8);
+      renderDeviceStatus(carReceivedAt,dynoReceivedAt);
     }
     function render(test,latest={}){
       currentTest=test;
