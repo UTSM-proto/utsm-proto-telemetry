@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from live_dashboard.app import (
     DynoTestManager,
+    RelayHeartbeatInput,
     TelemetryHub,
     TelemetryInput,
     TelemetryRecord,
@@ -101,6 +102,25 @@ class TestLiveTelemetry(unittest.TestCase):
         latest = asyncio.run(exercise())
         self.assertEqual(latest["car"]["sequence"], 3)
         self.assertEqual(latest["dyno"]["sequence"], 2)
+
+    def test_relay_heartbeat_is_separate_from_telemetry_records(self):
+        async def exercise():
+            hub = TelemetryHub(max_records=10)
+            await hub.publish_relay_heartbeat(
+                RelayHeartbeatInput(
+                    device_id="test-relay",
+                    uptime_ms=1234,
+                    lte_ip="10.1.2.3",
+                    signal_csq=28,
+                )
+            )
+            return await hub.relay_heartbeat_snapshot(), await hub.recent()
+
+        heartbeat, recent = asyncio.run(exercise())
+        self.assertTrue(heartbeat["online"])
+        self.assertEqual(heartbeat["lte_ip"], "10.1.2.3")
+        self.assertEqual(heartbeat["signal_csq"], 28)
+        self.assertEqual(recent, [])
 
     def test_dyno_test_integrates_each_source_and_stops(self):
         async def exercise():

@@ -118,6 +118,7 @@ class TestSetupPortal(unittest.TestCase):
         self.assertIn("Telemetry ESP32-C3", page)
         self.assertIn("LTE → dashboard", page)
         self.assertIn("refreshRelayStatus", page)
+        self.assertIn("LTE heartbeat", page)
 
 
 if __name__ == "__main__":

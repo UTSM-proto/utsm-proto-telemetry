@@ -117,13 +117,14 @@
         const response=await fetch('/api/live/status',{cache:'no-store'});
         if(!response.ok)throw new Error('Local relay diagnostics unavailable');
         const state=await response.json(),relay=state.relay||{};relayDiagnostic=relay;
-        const usb=Boolean(relay.serial_connected),port=relay.port;
-        setDeviceStatus('wroverDot','wroverStatus',usb?'online':port?'warn':'offline',usb?`Connected on ${port}`:port?`${port} detected; serial monitor offline`:'Not detected');
+        const usb=Boolean(relay.serial_connected),port=relay.port,heartbeat=relay.heartbeat||null,remote=Boolean(heartbeat?.online);
+        const wroverText=usb?`USB connected on ${port}`:remote?`LTE heartbeat · ${heartbeat.lte_ip} · ${heartbeat.age_seconds.toFixed(0)}s ago`:port?`${port} detected; serial monitor offline`:'No USB or LTE heartbeat';
+        setDeviceStatus('wroverDot','wroverStatus',(usb||remote)?'online':port?'warn':'offline',wroverText);
         const c3Age=relay.c3_age_seconds,c3Last=relay.last_car_sequence==null?'no packets':`last seq ${relay.last_car_sequence}`;
         setDeviceStatus('c3Dot','c3Status',relay.c3_connected?'online':'offline',relay.c3_connected?`ESP-NOW live · seq ${relay.last_car_sequence??'seen'}`:c3Age==null?'No ESP-NOW car packets seen':`Offline · ${c3Last} · ${c3Age.toFixed(0)}s ago`);
         const delivered=relay.post_status>=200&&relay.post_status<300;
-        const relayText=delivered?`Delivered · HTTP ${relay.post_status}`:relay.last_error||((relay.lte_registered||relay.lte_ip)?`LTE connected${relay.lte_ip?` · ${relay.lte_ip}`:''}; waiting for POST`:'No LTE delivery yet');
-        setDeviceStatus('relayDot','relayStatus',delivered?'online':(relay.lte_registered||relay.last_error)?'warn':'offline',relayText);
+        const relayText=delivered?`Telemetry delivered · HTTP ${relay.post_status}`:remote?`WROVER online · CSQ ${heartbeat.signal_csq}`:relay.last_error||((relay.lte_registered||relay.lte_ip)?`LTE connected${relay.lte_ip?` · ${relay.lte_ip}`:''}; waiting for POST`:'No LTE delivery yet');
+        setDeviceStatus('relayDot','relayStatus',(delivered||remote)?'online':(relay.lte_registered||relay.last_error)?'warn':'offline',relayText);
       }catch(error){relayDiagnostic=null;setDeviceStatus('wroverDot','wroverStatus','warn','Local diagnostics unavailable');setDeviceStatus('c3Dot','c3Status','offline','Status unavailable');setDeviceStatus('relayDot','relayStatus','offline','Status unavailable')}
       finally{setTimeout(refreshRelayStatus,1000)}
     }

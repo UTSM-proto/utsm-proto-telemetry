@@ -63,6 +63,17 @@ class TelemetryRecord(TelemetryInput):
         )
 
 
+class RelayHeartbeatInput(BaseModel):
+    device_id: str = Field(min_length=1, max_length=64)
+    uptime_ms: int = Field(ge=0, le=0xFFFFFFFF)
+    lte_ip: str = Field(min_length=1, max_length=64)
+    signal_csq: int = Field(ge=0, le=99)
+
+
+class RelayHeartbeatRecord(RelayHeartbeatInput):
+    received_at: datetime
+
+
 class ProgramWroverRequest(BaseModel):
     port: str = Field(min_length=4, max_length=16)
 
@@ -72,6 +83,7 @@ class TelemetryHub:
         self.records: deque[TelemetryRecord] = deque(maxlen=max_records)
         self.clients: set[WebSocket] = set()
         self.lock = asyncio.Lock()
+        self.relay_heartbeat: RelayHeartbeatRecord | None = None
 
     async def publish(self, record: TelemetryRecord) -> None:
         async with self.lock:
@@ -115,6 +127,26 @@ class TelemetryHub:
                 if len(latest) == 2:
                     break
             return latest
+
+    async def publish_relay_heartbeat(self, value: RelayHeartbeatInput) -> None:
+        async with self.lock:
+            self.relay_heartbeat = RelayHeartbeatRecord(
+                **value.model_dump(), received_at=datetime.now(timezone.utc)
+            )
+
+    async def relay_heartbeat_snapshot(self) -> dict[str, object] | None:
+        async with self.lock:
+            if self.relay_heartbeat is None:
+                return None
+            record = self.relay_heartbeat
+            heartbeat = record.model_dump(mode="json")
+        received_at = record.received_at
+        age_seconds = max(
+            0.0, (datetime.now(timezone.utc) - received_at).total_seconds()
+        )
+        heartbeat["age_seconds"] = round(age_seconds, 1)
+        heartbeat["online"] = age_seconds <= 45
+        return heartbeat
 
 
 class EnergyAccumulator:
@@ -292,7 +324,9 @@ async def setup_status(request: Request) -> dict[str, object]:
 @app.get("/api/live/status")
 async def live_relay_status() -> dict[str, object]:
     """Expose sanitized connection diagnostics without setup controls or logs."""
-    return {"relay": setup_coordinator.relay_snapshot()}
+    relay = setup_coordinator.relay_snapshot()
+    relay["heartbeat"] = await hub.relay_heartbeat_snapshot()
+    return {"relay": relay}
 
 
 @app.post("/api/setup/program", status_code=202)
@@ -362,6 +396,16 @@ async def ingest_telemetry(
     await dyno_tests.record(record)
     await hub.publish(record)
     return {"accepted": True, "sequence": record.sequence}
+
+
+@app.post("/api/live/relay-heartbeat", status_code=202)
+async def ingest_relay_heartbeat(
+    heartbeat: RelayHeartbeatInput,
+    x_telemetry_key: Annotated[str | None, Header()] = None,
+) -> dict[str, object]:
+    verify_ingestion_key(x_telemetry_key)
+    await hub.publish_relay_heartbeat(heartbeat)
+    return {"accepted": True, "uptime_ms": heartbeat.uptime_ms}
 
 
 @app.websocket("/ws/live")
