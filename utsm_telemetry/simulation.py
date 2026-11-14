@@ -921,12 +921,12 @@ def _soft_current_penalty(
 
 
 def _physics_propulsion_power_w(
-    speed_kph: float,
-    accel_m_s2: float,
-    grade_pct: float,
+    speed_kph: float | np.ndarray,
+    accel_m_s2: float | np.ndarray,
+    grade_pct: float | np.ndarray,
     motor_config: dict[str, float | str] | None,
-    curvature_1_m: float = 0.0,
-) -> float:
+    curvature_1_m: float | np.ndarray = 0.0,
+) -> float | np.ndarray:
     """Estimate mechanical propulsive power in watts.
     
     Force components (all in Newtons):
@@ -953,7 +953,7 @@ def _physics_propulsion_power_w(
     if motor_config is None:
         return 0.0
     
-    speed_m_s = max(speed_kph / 3.6, 0.0)
+    speed_m_s = np.maximum(speed_kph / 3.6, 0.0)
     vehicle_mass_kg = float(motor_config.get("vehicle_mass_kg", 100.0))
     driver_mass_kg = float(motor_config.get("driver_mass_kg", 0.0))
     total_mass_kg = vehicle_mass_kg + driver_mass_kg
@@ -971,7 +971,7 @@ def _physics_propulsion_power_w(
     grade_force = total_mass_kg * 9.80665 * (grade_pct / 100.0)
     
     # Acceleration force: F = m * a (only positive acceleration counts)
-    accel_force = total_mass_kg * max(accel_m_s2, 0.0)
+    accel_force = total_mass_kg * np.maximum(accel_m_s2, 0.0)
     
     # Aerodynamic drag: F_drag = 0.5 * ρ * CdA * v²
     # Only included if cd_area_m2 > 0 (allows disabling for calibration/testing)
@@ -982,13 +982,14 @@ def _physics_propulsion_power_w(
     
     # Corner drag: effective resistance from tire scrub in turns
     # F_corner = corner_drag_factor * m * v² * κ
-    corner_force = corner_drag_factor * total_mass_kg * (speed_m_s ** 2) * max(curvature_1_m, 0.0)
+    corner_force = corner_drag_factor * total_mass_kg * (speed_m_s ** 2) * np.maximum(curvature_1_m, 0.0)
     
     # Total propulsive force (only positive, so we overcome all resistances)
-    propulsive_force = max(rolling_force + grade_force + accel_force + aero_drag_force + corner_force, 0.0)
+    propulsive_force = np.maximum(rolling_force + grade_force + accel_force + aero_drag_force + corner_force, 0.0)
     
     # Power = Force × Velocity / Efficiency
-    return float(propulsive_force * speed_m_s / efficiency)
+    power = propulsive_force * speed_m_s / efficiency
+    return float(power) if np.ndim(power) == 0 else power
 
 
 def _fuse_burst_duration_s(time_s: float, throttle_duty: float) -> float:
