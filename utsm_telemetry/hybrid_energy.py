@@ -217,9 +217,10 @@ def train(root, count, pretrained=None):
             net, dev, alpha, physics_weight, collocation))
 
     informed = min((c for c in candidates if c[3] > 0), key=lambda c: c[0])
+    selected = min(candidates, key=lambda c: (c[0], c[3]))
     ablation = min((c for c in candidates if c[3] == 0 and c[1] == informed[1]), key=lambda c: c[0])
-    _, width, alpha, physics_weight, net, _ = informed
-    model = refit(informed)
+    _, width, alpha, physics_weight, net, _ = selected
+    model = refit(selected)
     x = test[FEATURES]
     real = network(width).fit(dev[FEATURES], dev.target_w, mlpregressor__sample_weight=weights(dev))
     forest = RandomForestRegressor(n_estimators=350, min_samples_leaf=20, max_depth=12,
@@ -230,7 +231,8 @@ def train(root, count, pretrained=None):
         "pretrained_only": np.maximum(net.predict(x), 0),
         "real_only_mlp": np.maximum(real.predict(x), 0),
         "random_forest": forest.predict(x),
-        "hybrid_physics_loss": predict_power(model, test),
+        "hybrid_selected": predict_power(model, test),
+        "hybrid_physics_loss": predict_power(refit(informed), test),
         "hybrid_without_physics_loss": predict_power(refit(ablation), test),
     }
     report = dict(seed=SEED, sklearn=sklearn.__version__, synthetic_rows=len(sim),
