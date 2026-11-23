@@ -1,0 +1,686 @@
+{
+  "seed": 42,
+  "sklearn": "1.9.1",
+  "synthetic_rows": 40120,
+  "selected": {
+    "width": 64,
+    "alpha": 0.1,
+    "physics_weight": 0.03
+  },
+  "validation": [
+    {
+      "mae_wh": 10.224696772026219,
+      "width": 64,
+      "alpha": 0.01,
+      "physics_weight": 0.0
+    },
+    {
+      "mae_wh": 9.40292789361676,
+      "width": 64,
+      "alpha": 0.01,
+      "physics_weight": 0.003
+    },
+    {
+      "mae_wh": 7.0105028731596315,
+      "width": 64,
+      "alpha": 0.01,
+      "physics_weight": 0.01
+    },
+    {
+      "mae_wh": 5.252708447400609,
+      "width": 64,
+      "alpha": 0.01,
+      "physics_weight": 0.03
+    },
+    {
+      "mae_wh": 6.898188152110722,
+      "width": 64,
+      "alpha": 0.01,
+      "physics_weight": 0.1
+    },
+    {
+      "mae_wh": 9.529582304365215,
+      "width": 64,
+      "alpha": 0.1,
+      "physics_weight": 0.0
+    },
+    {
+      "mae_wh": 9.299357110543792,
+      "width": 64,
+      "alpha": 0.1,
+      "physics_weight": 0.003
+    },
+    {
+      "mae_wh": 7.726850739407082,
+      "width": 64,
+      "alpha": 0.1,
+      "physics_weight": 0.01
+    },
+    {
+      "mae_wh": 5.1458258692266385,
+      "width": 64,
+      "alpha": 0.1,
+      "physics_weight": 0.03
+    },
+    {
+      "mae_wh": 6.6491949867291495,
+      "width": 64,
+      "alpha": 0.1,
+      "physics_weight": 0.1
+    },
+    {
+      "mae_wh": 8.922339130455613,
+      "width": 64,
+      "alpha": 1.0,
+      "physics_weight": 0.0
+    },
+    {
+      "mae_wh": 8.58423069609398,
+      "width": 64,
+      "alpha": 1.0,
+      "physics_weight": 0.003
+    },
+    {
+      "mae_wh": 7.500074703722883,
+      "width": 64,
+      "alpha": 1.0,
+      "physics_weight": 0.01
+    },
+    {
+      "mae_wh": 5.811377016050598,
+      "width": 64,
+      "alpha": 1.0,
+      "physics_weight": 0.03
+    },
+    {
+      "mae_wh": 8.583547464025132,
+      "width": 64,
+      "alpha": 1.0,
+      "physics_weight": 0.1
+    },
+    {
+      "mae_wh": 7.658045815441947,
+      "width": 64,
+      "alpha": 10.0,
+      "physics_weight": 0.0
+    },
+    {
+      "mae_wh": 7.30832586645592,
+      "width": 64,
+      "alpha": 10.0,
+      "physics_weight": 0.003
+    },
+    {
+      "mae_wh": 6.5517671847482575,
+      "width": 64,
+      "alpha": 10.0,
+      "physics_weight": 0.01
+    },
+    {
+      "mae_wh": 6.830889108935919,
+      "width": 64,
+      "alpha": 10.0,
+      "physics_weight": 0.03
+    },
+    {
+      "mae_wh": 9.672143477943024,
+      "width": 64,
+      "alpha": 10.0,
+      "physics_weight": 0.1
+    }
+  ],
+  "sources": [
+    {
+      "path": "data/runs/laval/2026-09-19-19-07.csv",
+      "sha256": "41ffda9c7fd261dcfd9586205be211c0765b15bde32c9376f71869f97ab4f5fb",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": false,
+      "intervals": 8,
+      "seconds": 3.492000000000001,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-19-19-09.csv",
+      "sha256": "d8565cd0e93f94598e1d708c176e35a54c057ad04cc9ac62f460146a4e9038b0",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": false,
+      "intervals": 2,
+      "seconds": 0.9329999999999927,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-19-19-26.csv",
+      "sha256": "9793225e4c4bb8b7b10a67b457ab3d9634f895a945920f01a08b6d5da153754c",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": true,
+      "intervals": 2028,
+      "seconds": 952.2659999999992,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-19-20-41.csv",
+      "sha256": "aea3c37670451f5f27f80fcb025b429ca55313388a44086822b1088f565cc83f",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": true,
+      "intervals": 70,
+      "seconds": 32.57099999999953,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-19-21-09.csv",
+      "sha256": "f93025bb9f5c9b8d90b0e81b7ab2dd1db75f7054a8260cd68a3529521c6dad54",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": false,
+      "intervals": 5,
+      "seconds": 2.3870000000000005,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-19-21-13.csv",
+      "sha256": "3a72bbfb4ae8dac6fc3225aa3a4de3a071aa5f92a9892649fa7da50d33a7b387",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-19-21-28.csv",
+      "sha256": "7accdf0ae280fc0a6a4ef86d520b82b013d17cc6f5966faa09bc86df376309ef",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": true,
+      "intervals": 71,
+      "seconds": 33.66700000000003,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-19-21-33.csv",
+      "sha256": "647d927b7c68aa93d8b072cea4f086088734112cd39402e489e47c9738ce0475",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-19-22-16.csv",
+      "sha256": "26b158b0d6106501f068fe63c93f79c9cf293da3da6ef2671569564408b47130",
+      "track": "Laval",
+      "holdout": false,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-20-14-00.csv",
+      "sha256": "f22925701214037bdebcfaf283cd0634af080b84a4aa9368b79e73af19025df9",
+      "track": "Laval",
+      "holdout": true,
+      "accepted": true,
+      "intervals": 440,
+      "seconds": 211.69200000000055,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-20-15-36.csv",
+      "sha256": "fee16967966dd4ec08cb9ecff19d203b22d488074bfc4a93ea86eb63a260bad2",
+      "track": "Laval",
+      "holdout": true,
+      "accepted": false,
+      "intervals": 1,
+      "seconds": 0.4830000000000041,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-20-15-41.csv",
+      "sha256": "37fcaca19f0a2c71aaf450728dbc49cac05441952b0bc2eb95e360aa1ef36847",
+      "track": "Laval",
+      "holdout": true,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-20-16-04.csv",
+      "sha256": "eb8f7480d832b94e4a239763e6b751bd7664ac591891fa40bd6a910d56f7f27c",
+      "track": "Laval",
+      "holdout": true,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-20-16-15.csv",
+      "sha256": "929aa70441c7caf1d27f189f9fb6a82efe680f555b58287dff098e6f3c1be07a",
+      "track": "Laval",
+      "holdout": true,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-20-17-02.csv",
+      "sha256": "aab800aea63e2e3e81f77c82e73b9954bcff71af498538fde64673cdc4c4380f",
+      "track": "Laval",
+      "holdout": true,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-20-17-11-001.csv",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "track": "Laval",
+      "holdout": true,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/laval/2026-09-20-17-11.csv",
+      "sha256": "f8d1139f733cd3ac2145c1dc38340c71ef7ede5486887f866d00d65d55e819d2",
+      "track": "Laval",
+      "holdout": true,
+      "accepted": false,
+      "intervals": 0,
+      "seconds": 0.0,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/front-campus-2026-08-06-run-01/front-campus-2026-08-06-run-01-telemetry.csv",
+      "sha256": "cd7e4f32ed5c61b01a9119fce83bec716c319f5dc62f6bb5330db99dfe02557a",
+      "track": "Front Campus",
+      "holdout": false,
+      "accepted": true,
+      "intervals": 2346,
+      "seconds": 712.662,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/front-campus-2026-08-06-run-02/front-campus-2026-08-06-run-02-telemetry.csv",
+      "sha256": "801bc21f695daed99493e4cde1b4f5723ea5697657872924c708987223191d68",
+      "track": "Front Campus",
+      "holdout": false,
+      "accepted": true,
+      "intervals": 1197,
+      "seconds": 368.898,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/front-campus-2026-08-06-run-03/front-campus-2026-08-06-run-03-telemetry.csv",
+      "sha256": "6696c97ebe32cc714ae58572d40e2d49d7fe171727166bee9f4031a08fc67840",
+      "track": "Front Campus",
+      "holdout": true,
+      "accepted": true,
+      "intervals": 2004,
+      "seconds": 621.945,
+      "gpx_sha256": null
+    },
+    {
+      "path": "data/runs/morning-run/telemetry_20260411_112302.csv",
+      "sha256": "da43ae8e02d1d9b499c8e020b1d9942aa8de0ad0c944eb42aafb308b06a4be9f",
+      "track": "Indianapolis",
+      "holdout": false,
+      "accepted": true,
+      "intervals": 2635,
+      "seconds": 1604.25,
+      "gpx_sha256": "c6c5215723240b5a7005b9e6f13a583f2bbbe031d0ec04851d6409722d629bc2"
+    },
+    {
+      "path": "data/runs/afternoon-run/telemetry_20260411_122713.csv",
+      "sha256": "438f1283cfeda4a9928d7211f090741daaef67214c1d0bdcbcf7e174079d11fb",
+      "track": "Indianapolis",
+      "holdout": true,
+      "accepted": true,
+      "intervals": 3269,
+      "seconds": 1989.7780000000002,
+      "gpx_sha256": "d4ead2545927512b144835a4ecc20179b1902f18267bd6a414e668524deebe7a"
+    }
+  ],
+  "metrics": {
+    "physics": {
+      "absolute_error_wh": 20.906877147216335,
+      "signed_error_wh": 4.589272324078425,
+      "absolute_error_pct": 63.86239318377304,
+      "interval_mae_w": 151.4690631475704,
+      "by_track": {
+        "Front Campus": {
+          "absolute_error_wh": 10.487068094372017,
+          "signed_error_wh": -10.487068094372017,
+          "absolute_error_pct": 35.945602904733995
+        },
+        "Indianapolis": {
+          "absolute_error_wh": 38.244224206942135,
+          "signed_error_wh": 38.244224206942135,
+          "absolute_error_pct": 85.26981111996749
+        },
+        "Laval": {
+          "absolute_error_wh": 13.989339140334845,
+          "signed_error_wh": -13.989339140334845,
+          "absolute_error_pct": 70.37176552661762
+        }
+      },
+      "runs": [
+        {
+          "track": "Front Campus",
+          "run": "front-campus-2026-08-06-run-03-telemetry",
+          "measured_wh": 29.17482876046261,
+          "predicted_wh": 18.687760666090593,
+          "seconds": 621.945,
+          "signed_error_wh": -10.487068094372017,
+          "absolute_error_wh": 10.487068094372017,
+          "absolute_error_pct": 35.945602904733995
+        },
+        {
+          "track": "Indianapolis",
+          "run": "telemetry_20260411_122713",
+          "measured_wh": 44.85083724782234,
+          "predicted_wh": 83.09506145476448,
+          "seconds": 1989.778,
+          "signed_error_wh": 38.244224206942135,
+          "absolute_error_wh": 38.244224206942135,
+          "absolute_error_pct": 85.26981111996749
+        },
+        {
+          "track": "Laval",
+          "run": "2026-09-20-14-00",
+          "measured_wh": 19.879193076438415,
+          "predicted_wh": 5.889853936103571,
+          "seconds": 211.69200000000055,
+          "signed_error_wh": -13.989339140334845,
+          "absolute_error_wh": 13.989339140334845,
+          "absolute_error_pct": 70.37176552661762
+        }
+      ]
+    },
+    "pretrained_only": {
+      "absolute_error_wh": 21.16755212006223,
+      "signed_error_wh": 4.953944268673457,
+      "absolute_error_pct": 64.32815307874405,
+      "interval_mae_w": 151.6900165141459,
+      "by_track": {
+        "Front Campus": {
+          "absolute_error_wh": 10.430556838731018,
+          "signed_error_wh": -10.430556838731018,
+          "absolute_error_pct": 35.751904233509634
+        },
+        "Indianapolis": {
+          "absolute_error_wh": 39.182244583103525,
+          "signed_error_wh": 39.182244583103525,
+          "absolute_error_pct": 87.36123334020026
+        },
+        "Laval": {
+          "absolute_error_wh": 13.889854938352137,
+          "signed_error_wh": -13.889854938352137,
+          "absolute_error_pct": 69.87132166252225
+        }
+      },
+      "runs": [
+        {
+          "track": "Front Campus",
+          "run": "front-campus-2026-08-06-run-03-telemetry",
+          "measured_wh": 29.17482876046261,
+          "predicted_wh": 18.744271921731592,
+          "seconds": 621.945,
+          "signed_error_wh": -10.430556838731018,
+          "absolute_error_wh": 10.430556838731018,
+          "absolute_error_pct": 35.751904233509634
+        },
+        {
+          "track": "Indianapolis",
+          "run": "telemetry_20260411_122713",
+          "measured_wh": 44.85083724782234,
+          "predicted_wh": 84.03308183092587,
+          "seconds": 1989.778,
+          "signed_error_wh": 39.182244583103525,
+          "absolute_error_wh": 39.182244583103525,
+          "absolute_error_pct": 87.36123334020026
+        },
+        {
+          "track": "Laval",
+          "run": "2026-09-20-14-00",
+          "measured_wh": 19.879193076438415,
+          "predicted_wh": 5.9893381380862785,
+          "seconds": 211.69200000000055,
+          "signed_error_wh": -13.889854938352137,
+          "absolute_error_wh": 13.889854938352137,
+          "absolute_error_pct": 69.87132166252225
+        }
+      ]
+    },
+    "real_only_mlp": {
+      "absolute_error_wh": 8.210266330596138,
+      "signed_error_wh": -8.210266330596138,
+      "absolute_error_pct": 35.309917133662715,
+      "interval_mae_w": 127.40380807673823,
+      "by_track": {
+        "Front Campus": {
+          "absolute_error_wh": 8.58754113573141,
+          "signed_error_wh": -8.58754113573141,
+          "absolute_error_pct": 29.434761061457014
+        },
+        "Indianapolis": {
+          "absolute_error_wh": 1.5027202877872412,
+          "signed_error_wh": -1.5027202877872412,
+          "absolute_error_pct": 3.3504843610476933
+        },
+        "Laval": {
+          "absolute_error_wh": 14.540537568269762,
+          "signed_error_wh": -14.540537568269762,
+          "absolute_error_pct": 73.14450597848344
+        }
+      },
+      "runs": [
+        {
+          "track": "Front Campus",
+          "run": "front-campus-2026-08-06-run-03-telemetry",
+          "measured_wh": 29.17482876046261,
+          "predicted_wh": 20.5872876247312,
+          "seconds": 621.945,
+          "signed_error_wh": -8.58754113573141,
+          "absolute_error_wh": 8.58754113573141,
+          "absolute_error_pct": 29.434761061457014
+        },
+        {
+          "track": "Indianapolis",
+          "run": "telemetry_20260411_122713",
+          "measured_wh": 44.85083724782234,
+          "predicted_wh": 43.3481169600351,
+          "seconds": 1989.778,
+          "signed_error_wh": -1.5027202877872412,
+          "absolute_error_wh": 1.5027202877872412,
+          "absolute_error_pct": 3.3504843610476933
+        },
+        {
+          "track": "Laval",
+          "run": "2026-09-20-14-00",
+          "measured_wh": 19.879193076438415,
+          "predicted_wh": 5.338655508168652,
+          "seconds": 211.69200000000055,
+          "signed_error_wh": -14.540537568269762,
+          "absolute_error_wh": 14.540537568269762,
+          "absolute_error_pct": 73.14450597848344
+        }
+      ]
+    },
+    "random_forest": {
+      "absolute_error_wh": 8.258633567232385,
+      "signed_error_wh": -8.206747755386582,
+      "absolute_error_pct": 36.4865669668236,
+      "interval_mae_w": 124.2791822792816,
+      "by_track": {
+        "Front Campus": {
+          "absolute_error_wh": 9.33048170504296,
+          "signed_error_wh": -9.33048170504296,
+          "absolute_error_pct": 31.98127324636613
+        },
+        "Indianapolis": {
+          "absolute_error_wh": 0.07782871776870337,
+          "signed_error_wh": 0.07782871776870337,
+          "absolute_error_pct": 0.17352790392442946
+        },
+        "Laval": {
+          "absolute_error_wh": 15.36759027888549,
+          "signed_error_wh": -15.36759027888549,
+          "absolute_error_pct": 77.30489975018025
+        }
+      },
+      "runs": [
+        {
+          "track": "Front Campus",
+          "run": "front-campus-2026-08-06-run-03-telemetry",
+          "measured_wh": 29.17482876046261,
+          "predicted_wh": 19.84434705541965,
+          "seconds": 621.945,
+          "signed_error_wh": -9.33048170504296,
+          "absolute_error_wh": 9.33048170504296,
+          "absolute_error_pct": 31.98127324636613
+        },
+        {
+          "track": "Indianapolis",
+          "run": "telemetry_20260411_122713",
+          "measured_wh": 44.85083724782234,
+          "predicted_wh": 44.928665965591044,
+          "seconds": 1989.778,
+          "signed_error_wh": 0.07782871776870337,
+          "absolute_error_wh": 0.07782871776870337,
+          "absolute_error_pct": 0.17352790392442946
+        },
+        {
+          "track": "Laval",
+          "run": "2026-09-20-14-00",
+          "measured_wh": 19.879193076438415,
+          "predicted_wh": 4.511602797552925,
+          "seconds": 211.69200000000055,
+          "signed_error_wh": -15.36759027888549,
+          "absolute_error_wh": 15.36759027888549,
+          "absolute_error_pct": 77.30489975018025
+        }
+      ]
+    },
+    "hybrid_physics_loss": {
+      "absolute_error_wh": 9.379012234179005,
+      "signed_error_wh": -9.090182746663286,
+      "absolute_error_pct": 40.35972259300586,
+      "interval_mae_w": 127.439556725346,
+      "by_track": {
+        "Front Campus": {
+          "absolute_error_wh": 12.008904702520251,
+          "signed_error_wh": -12.008904702520251,
+          "absolute_error_pct": 41.16186868179525
+        },
+        "Indianapolis": {
+          "absolute_error_wh": 0.4332442312735765,
+          "signed_error_wh": 0.4332442312735765,
+          "absolute_error_pct": 0.9659668756676598
+        },
+        "Laval": {
+          "absolute_error_wh": 15.694887768743186,
+          "signed_error_wh": -15.694887768743186,
+          "absolute_error_pct": 78.95133222155467
+        }
+      },
+      "runs": [
+        {
+          "track": "Front Campus",
+          "run": "front-campus-2026-08-06-run-03-telemetry",
+          "measured_wh": 29.17482876046261,
+          "predicted_wh": 17.16592405794236,
+          "seconds": 621.945,
+          "signed_error_wh": -12.008904702520251,
+          "absolute_error_wh": 12.008904702520251,
+          "absolute_error_pct": 41.16186868179525
+        },
+        {
+          "track": "Indianapolis",
+          "run": "telemetry_20260411_122713",
+          "measured_wh": 44.85083724782234,
+          "predicted_wh": 45.28408147909592,
+          "seconds": 1989.778,
+          "signed_error_wh": 0.4332442312735765,
+          "absolute_error_wh": 0.4332442312735765,
+          "absolute_error_pct": 0.9659668756676598
+        },
+        {
+          "track": "Laval",
+          "run": "2026-09-20-14-00",
+          "measured_wh": 19.879193076438415,
+          "predicted_wh": 4.184305307695229,
+          "seconds": 211.69200000000055,
+          "signed_error_wh": -15.694887768743186,
+          "absolute_error_wh": 15.694887768743186,
+          "absolute_error_pct": 78.95133222155467
+        }
+      ]
+    },
+    "hybrid_without_physics_loss": {
+      "absolute_error_wh": 9.43494527013281,
+      "signed_error_wh": -9.43494527013281,
+      "absolute_error_pct": 40.13836137695769,
+      "interval_mae_w": 126.93947182153678,
+      "by_track": {
+        "Front Campus": {
+          "absolute_error_wh": 12.659331468938376,
+          "signed_error_wh": -12.659331468938376,
+          "absolute_error_pct": 43.39127942404294
+        },
+        "Indianapolis": {
+          "absolute_error_wh": 0.5995166896279756,
+          "signed_error_wh": -0.5995166896279756,
+          "absolute_error_pct": 1.3366900740678684
+        },
+        "Laval": {
+          "absolute_error_wh": 15.04598765183208,
+          "signed_error_wh": -15.04598765183208,
+          "absolute_error_pct": 75.68711463276226
+        }
+      },
+      "runs": [
+        {
+          "track": "Front Campus",
+          "run": "front-campus-2026-08-06-run-03-telemetry",
+          "measured_wh": 29.17482876046261,
+          "predicted_wh": 16.515497291524234,
+          "seconds": 621.945,
+          "signed_error_wh": -12.659331468938376,
+          "absolute_error_wh": 12.659331468938376,
+          "absolute_error_pct": 43.39127942404294
+        },
+        {
+          "track": "Indianapolis",
+          "run": "telemetry_20260411_122713",
+          "measured_wh": 44.85083724782234,
+          "predicted_wh": 44.251320558194365,
+          "seconds": 1989.778,
+          "signed_error_wh": -0.5995166896279756,
+          "absolute_error_wh": 0.5995166896279756,
+          "absolute_error_pct": 1.3366900740678684
+        },
+        {
+          "track": "Laval",
+          "run": "2026-09-20-14-00",
+          "measured_wh": 19.879193076438415,
+          "predicted_wh": 4.833205424606335,
+          "seconds": 211.69200000000055,
+          "signed_error_wh": -15.04598765183208,
+          "absolute_error_wh": 15.04598765183208,
+          "absolute_error_pct": 75.68711463276226
+        }
+      ]
+    }
+  }
+}
